@@ -59,8 +59,8 @@ int insert(product **l, product *node){
 
 	product * temp = findItem(*l, node->name);
 
+	//if the product already exists,  will update quantity
 	if (temp != NULL){
-
 		temp->quantity_value = node->quantity_value + temp->quantity_value;
 		printf("\n--------------------------------------------------\n");
 		printf("Product already exists, updated quantity\n");
@@ -69,6 +69,7 @@ int insert(product **l, product *node){
 		return 1;
 	}
 
+	//creates new node in the list
 	else{
 		node->next = *l;
 		*l = node;
@@ -83,41 +84,45 @@ void rmItem(product ** l, char name[]){
 	product * current = *l;
 	product * previous = current;
 
+	//if the list is empty
 	if(current == NULL){
 
-		printf("here1\n");
 		printf("\n-------------------------------\n");
 		printf("The item was not found\n");
 		printf("----------------------------------\n\n");
+		return;
 	}
-	while(current != NULL) {
-		if (strcmp(current->name, name) == 0) {
-			if(previous == current){
-				*l = (current->next);
-			}
-			else{
-				previous->next = current->next;
+
+	else {
+		while(current != NULL) {
+
+			//if the item was found in the list
+			if (strcmp(current->name, name) == 0) {
+				if(previous == current){
+					*l = (current->next);
+				}
+				else{
+					previous->next = current->next;
+				}
+
+				free (current);
+				printf("\n*********************************\n");
+				printf("The item was removed\n");
+				printf("***********************************\n");
+				return;
 			}
 
-			free (current);
-			printf("\n*********************************\n");
-			printf("The item was removed\n");
-			printf("***********************************\n");
-			return;
+			//if it wasn't found, will move to next node
+			previous = current;
+			current = current->next;
 		}
-		previous = current;
-		current = current->next;
 	}
-
-	printf("\n----------------------------\n");
-	printf("The item was not found\n");
-	printf("-------------------------------\n\n");
-	return;
 }
 
 // show list
 void showList(product * l){
 
+	//if the node isn't empty
 	if (l != NULL){
 
 		printf("---------------------------------\n\n");
@@ -127,6 +132,8 @@ void showList(product * l){
 		printf("\nPrice Value: %f", l->price_value);
 		printf("\nPrice unit: %s\n", l->price_unit);
 		printf("----------------------------------\n\n");
+
+		//recursive call for the next node
 		showList(&(*l->next));
 		
 	}
@@ -187,12 +194,15 @@ int saveData(char outf[], product *l){
 
 // sell product product of quantity q
 float purchase(product *l, char name[], float q){
+
+	//first locate the product in the list
 	product * node = findItem(l, name);
 	float total = 0.0;
 
+	//if the item is found
 	if (node != NULL){
 
-
+		//making sure the quantity needed is available
 		if(node->quantity_value >= q){
 
 			printf("q: %f\n", q);
@@ -211,6 +221,7 @@ float purchase(product *l, char name[], float q){
 		}
 	}
 
+	//if the product wasn't found in the lsit
 	else {
 		printf("\n--------------------------\n");
 		printf("Product was not found\n");
@@ -239,19 +250,23 @@ void check_price(product *l, char p[]){
 // find a product p from list l
 product * findItem(product *l, char p[]){
 
+	//reached end of list, so product isn't found
 	if(l == NULL){
 		return NULL;
 	}
 
+	//product was located
 	else if (strcmp(l->name, p) == 0){
 		return l;
 	}
 
+	//recursive call to move through the list
 	else {
 		return findItem(l->next, p);
 	}
 }
 
+//shows the menu to the user
 void displayMenu(){
 	printf("\n==========================================================================\n");
 	printf("Welcome to Kehlsey's Grocery Store\n");
